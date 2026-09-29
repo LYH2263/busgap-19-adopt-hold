@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted, onUnmounted, ref } from 'vue'
 import { RouterLink, RouterView } from 'vue-router'
 import { api } from './api'
 
 const marks = ref<any[]>([])
 const stopName = ref('')
 
-onMounted(async () => {
+async function loadMarks() {
   try {
     const data = await api('/reports/timeline?line_id=1')
     marks.value = data.marks || []
@@ -14,7 +14,12 @@ onMounted(async () => {
   } catch {
     marks.value = []
   }
+}
+onMounted(() => {
+  loadMarks()
+  window.addEventListener('busgap:holds-changed', loadMarks)
 })
+onUnmounted(() => window.removeEventListener('busgap:holds-changed', loadMarks))
 </script>
 <template>
   <div class="bg-shell">

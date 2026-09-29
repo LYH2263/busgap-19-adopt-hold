@@ -1,5 +1,5 @@
 from datetime import datetime
-from sqlalchemy import DateTime, Float, ForeignKey, Integer, String, Text
+from sqlalchemy import DateTime, Float, ForeignKey, Integer, String, Text, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.database import Base
 
@@ -11,6 +11,7 @@ class Line(Base):
     planned_headway_min: Mapped[float] = mapped_column(Float, default=8.0)
     bunch_threshold: Mapped[float] = mapped_column(Float, default=3.0)
     large_threshold: Mapped[float] = mapped_column(Float, default=15.0)
+    max_hold_min: Mapped[float] = mapped_column(Float, default=5.0)
     trips: Mapped[list["Trip"]] = relationship(back_populates="line")
 
 class Trip(Base):
@@ -22,6 +23,17 @@ class Trip(Base):
     vehicle_no: Mapped[str] = mapped_column(String(32), default="")
     line: Mapped["Line"] = relationship(back_populates="trips")
     arrivals: Mapped[list["Arrival"]] = relationship(back_populates="trip")
+    holds: Mapped[list["HoldAction"]] = relationship(back_populates="trip")
+
+class HoldAction(Base):
+    __tablename__ = "hold_actions"
+    __table_args__ = (UniqueConstraint("trip_id", "stop_name", name="uq_hold_trip_stop"),)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    trip_id: Mapped[int] = mapped_column(ForeignKey("trips.id"))
+    stop_name: Mapped[str] = mapped_column(String(64))
+    hold_min: Mapped[float] = mapped_column(Float)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    trip: Mapped["Trip"] = relationship(back_populates="holds")
 
 class Arrival(Base):
     __tablename__ = "arrivals"

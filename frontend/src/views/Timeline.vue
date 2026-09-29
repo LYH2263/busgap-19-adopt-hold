@@ -1,8 +1,13 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted, onUnmounted, ref } from 'vue'
 import { api } from '../api'
 const data = ref<{ stop_name: string; marks: any[] }>({ stop_name: '', marks: [] })
-onMounted(async () => { data.value = await api('/reports/timeline?line_id=1') })
+async function load() { data.value = await api('/reports/timeline?line_id=1') }
+onMounted(() => {
+  load()
+  window.addEventListener('busgap:holds-changed', load)
+})
+onUnmounted(() => window.removeEventListener('busgap:holds-changed', load))
 </script>
 <template>
   <h1>时间轴明细</h1>

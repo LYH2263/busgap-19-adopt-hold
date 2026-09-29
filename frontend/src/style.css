@@ -181,3 +181,12 @@ th { color: var(--bg-dim); font-weight: 600; font-size: 0.78rem; }
   position: absolute; top: 8px; width: 10px; height: 32px;
   border-radius: 2px; transform: translateX(-50%);
 }
+
+.hold-row { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+.hold-row input {
+  width: 11rem; padding: 0.4rem 0.55rem;
+  background: #0a1c29; color: var(--bg-text);
+  border: 1px solid var(--bg-edge); font-size: 0.85rem;
+}
+.hold-row input:focus { outline: none; border-color: var(--bg-cyan); }
+.hold-err { color: var(--bg-red); font-size: 0.8rem; }
