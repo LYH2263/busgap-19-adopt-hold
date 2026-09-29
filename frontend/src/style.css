@@ -181,3 +181,27 @@ th { color: var(--bg-dim); font-weight: 600; font-size: 0.78rem; }
   position: absolute; top: 8px; width: 10px; height: 32px;
   border-radius: 2px; transform: translateX(-50%);
 }
+.tl-mark.tl-held {
+  outline: 2px solid var(--bg-amber);
+  outline-offset: 1px;
+  box-shadow: 0 0 10px rgba(255,176,32,0.6);
+}
+
+.tip-head { display: flex; align-items: center; gap: 0.5rem; }
+.tip-head .badge { margin-left: auto; }
+.hold-row {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 0.7rem;
+  margin-top: 0.3rem; font-size: 0.85rem;
+}
+.hold-in {
+  width: 4.2rem; padding: 0.3rem 0.4rem;
+  background: var(--bg-slate); color: var(--bg-text);
+  border: 1px solid var(--bg-edge); border-radius: 2px;
+}
+.hold-err { margin: 0.45rem 0 0; font-size: 0.8rem; color: var(--bg-red); }
+.hold-ok { margin: 0 0 0.9rem; font-size: 0.85rem; color: var(--bg-ok); }
+.bg-bus-dot.bg-bus-held {
+  outline: 2px solid var(--bg-amber);
+  outline-offset: 1px;
+  box-shadow: 0 0 12px rgba(255,176,32,0.65);
+}

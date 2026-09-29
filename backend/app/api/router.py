@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from app.api import arrivals, lines, reports, trips
+from app.api import arrivals, holds, lines, reports, trips
 api_router = APIRouter()
 
 @api_router.get("/health")
@@ -10,3 +10,4 @@ api_router.include_router(lines.router)
 api_router.include_router(trips.router)
 api_router.include_router(arrivals.router)
 api_router.include_router(reports.router)
+api_router.include_router(holds.router)

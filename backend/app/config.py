@@ -5,6 +5,7 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env")
     database_url: str = "postgresql+psycopg2://busgap:busgap@localhost:5447/busgap"
     seed_on_empty: bool = True
+    max_hold_min: float = 5.0
 
 
 settings = Settings()

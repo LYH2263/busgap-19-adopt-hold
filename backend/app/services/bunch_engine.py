@@ -1,7 +1,7 @@
 """Bus bunching: planned headway vs actual arrival gaps."""
 from __future__ import annotations
 from dataclasses import asdict, dataclass
-from datetime import datetime
+from datetime import datetime, timedelta
 
 @dataclass
 class GapEvent:
@@ -36,3 +36,22 @@ def detect_bunching(arrivals: list[dict], planned_headway_min: float, bunch_thre
 
 def events_to_dicts(events: list[GapEvent]) -> list[dict]:
     return [asdict(e) for e in events]
+
+def apply_holds(arrivals: list[dict], holds: list[dict]) -> list[dict]:
+    """Shift each arrival by holds applying at or before that stop.
+
+    A hold on (trip_id, stop_seq) delays that trip's arrival at the held stop
+    and every downstream stop by hold_min minutes. Returns new dicts and does
+    not mutate the inputs.
+    """
+    by_trip: dict[int, list[dict]] = {}
+    for h in holds:
+        by_trip.setdefault(h["trip_id"], []).append(h)
+    result: list[dict] = []
+    for a in arrivals:
+        delay = sum(h["hold_min"] for h in by_trip.get(a["trip_id"], []) if h["stop_seq"] <= a["stop_seq"])
+        shifted = dict(a)
+        if delay:
+            shifted["actual_arrive"] = a["actual_arrive"] + timedelta(minutes=delay)
+        result.append(shifted)
+    return result

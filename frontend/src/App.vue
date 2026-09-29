@@ -1,12 +1,13 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
-import { RouterLink, RouterView } from 'vue-router'
+import { ref, watch } from 'vue'
+import { RouterLink, RouterView, useRoute } from 'vue-router'
 import { api } from './api'
 
 const marks = ref<any[]>([])
 const stopName = ref('')
+const route = useRoute()
 
-onMounted(async () => {
+async function load() {
   try {
     const data = await api('/reports/timeline?line_id=1')
     marks.value = data.marks || []
@@ -14,7 +15,9 @@ onMounted(async () => {
   } catch {
     marks.value = []
   }
-})
+}
+
+watch(() => route.fullPath, load, { immediate: true })
 </script>
 <template>
   <div class="bg-shell">
@@ -32,9 +35,9 @@ onMounted(async () => {
             v-for="m in marks"
             :key="m.trip_no"
             class="bg-bus-dot"
-            :class="{ 'bg-bus-tight': m.pct < 15 }"
+            :class="{ 'bg-bus-tight': m.pct < 15, 'bg-bus-held': m.held }"
             :style="{ left: m.pct + '%' }"
-            :title="`${m.trip_no} ${m.actual_arrive}`"
+            :title="`${m.trip_no} ${m.actual_arrive}${m.held ? '（已扣车 ' + m.hold_min + ' 分）' : ''}`"
           >
             <span class="bg-bus-label">{{ m.trip_no }}</span>
           </div>

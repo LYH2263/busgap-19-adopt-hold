@@ -1,5 +1,5 @@
 from datetime import datetime
-from sqlalchemy import DateTime, Float, ForeignKey, Integer, String, Text
+from sqlalchemy import DateTime, Float, ForeignKey, Integer, String, Text, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.database import Base
 
@@ -22,6 +22,7 @@ class Trip(Base):
     vehicle_no: Mapped[str] = mapped_column(String(32), default="")
     line: Mapped["Line"] = relationship(back_populates="trips")
     arrivals: Mapped[list["Arrival"]] = relationship(back_populates="trip")
+    holds: Mapped[list["Hold"]] = relationship(back_populates="trip")
 
 class Arrival(Base):
     __tablename__ = "arrivals"
@@ -39,3 +40,14 @@ class BunchReport(Base):
     stop_name: Mapped[str] = mapped_column(String(64))
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
     summary_json: Mapped[str] = mapped_column(Text, default="[]")
+
+class Hold(Base):
+    __tablename__ = "holds"
+    __table_args__ = (UniqueConstraint("trip_id", "stop_name", name="uq_hold_trip_stop"),)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    trip_id: Mapped[int] = mapped_column(ForeignKey("trips.id"))
+    stop_name: Mapped[str] = mapped_column(String(64))
+    stop_seq: Mapped[int] = mapped_column(Integer)
+    hold_min: Mapped[float] = mapped_column(Float)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    trip: Mapped["Trip"] = relationship(back_populates="holds")
